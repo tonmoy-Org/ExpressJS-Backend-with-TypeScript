@@ -2,16 +2,6 @@
 
 A basic Node.js application that demonstrates simple CRUD operations for a product management system using Express, Mongoose, and Redis for caching.
 
-## Table of Contents
-
-- [Languages and Technologies Used](#languages-and-technologies-used)
-- [Features](#features)
-- [Installation](#installation)
-- [Environment Variables](#environment-variables)
-- [Running the Project](#running-the-project)
-- [API Endpoints](#api-endpoints)
-- [License](#license)
-
 ## Languages and Technologies Used
 
 1. **JavaScript/TypeScript**: The backend is built using TypeScript, a superset of JavaScript that adds static types.
