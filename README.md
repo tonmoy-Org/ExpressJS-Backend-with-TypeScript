@@ -27,11 +27,3 @@ A basic Node.js application that demonstrates simple CRUD operations for a produ
 
 - **Environment Configuration**:
   - Uses environment variables to manage database credentials and configuration.
-
-## Installation
-
-### Prerequisites
-
-- **Node.js** installed on your machine.
-- **MongoDB** running (local or cloud-based, e.g., MongoDB Atlas).
-- **Redis** running locally or in the cloud.
