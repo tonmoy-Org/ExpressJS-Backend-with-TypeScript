@@ -1,57 +1,93 @@
 import { Request, Response } from 'express';
 import Product from '../models/productModel';
+import { getCache, setCache } from '../cache';
 
-// CREATE Product
-export const createProduct = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const { name, price, description } = req.body;
-    const product = new Product({ name, price, description });
-    await product.save();
-    return res.status(201).json(product);
-  } catch (error) {
-    return res.status(500).json({ message: 'Error creating product', error });
-  }
-};
+const CACHE_DURATION = 3600; // cache expiration  for 1 hour
 
-// READ Product
-export const getProduct = async (req: Request, res: Response): Promise<any> => {
-  const { id } = req.params;
+
+export const getProduct = async (req: Request, res: Response): Promise<void> => {
+  const productId = req.params.id;
+
   try {
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+    const cachedProduct = await getCache(`product:${productId}`);
+    if (cachedProduct) {
+      res.status(200).json({ source: 'cache', product: cachedProduct });
+      return;
     }
-    return res.status(200).json(product);
-  } catch (error) {
-    return res.status(500).json({ message: 'Error fetching product', error });
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      res.status(404).json({ message: 'Product not found' });
+      return;
+    }
+
+
+    await setCache(`product:${productId}`, product, CACHE_DURATION);
+    res.status(200).json({ source: 'database', product });
+  } catch (err) {
+    console.error('Error fetching product:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// UPDATE Product
-export const updateProduct = async (req: Request, res: Response): Promise<any> => {
-  const { id } = req.params;
+
+export const createProduct = async (req: Request, res: Response): Promise<void> => {
   const { name, price, description } = req.body;
+
   try {
-    const product = await Product.findByIdAndUpdate(id, { name, price, description }, { new: true });
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-    return res.status(200).json(product);
-  } catch (error) {
-    return res.status(500).json({ message: 'Error updating product', error });
+    const newProduct = new Product({ name, price, description });
+    await newProduct.save();
+
+
+    await setCache(`product:${newProduct._id}`, newProduct, CACHE_DURATION);
+
+    res.status(201).json(newProduct);
+  } catch (err) {
+    console.error('Error creating product:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// DELETE Product
-export const deleteProduct = async (req: Request, res: Response): Promise<any> => {
-  const { id } = req.params;
+
+export const updateProduct = async (req: Request, res: Response): Promise<void> => {
+  const productId = req.params.id;
+  const updates = req.body;
+
   try {
-    const product = await Product.findByIdAndDelete(id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+    const updatedProduct = await Product.findByIdAndUpdate(productId, updates, { new: true });
+
+    if (!updatedProduct) {
+      res.status(404).json({ message: 'Product not found' });
+      return;
     }
-    return res.status(200).json({ message: 'Product deleted' });
-  } catch (error) {
-    return res.status(500).json({ message: 'Error deleting product', error });
+
+  
+    await setCache(`product:${productId}`, updatedProduct, CACHE_DURATION);
+
+    res.status(200).json(updatedProduct);
+  } catch (err) {
+    console.error('Error updating product:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
+  const productId = req.params.id;
+
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      res.status(404).json({ message: 'Product not found' });
+      return;
+    }
+
+    await getCache(`product:${productId}`);
+
+    res.status(200).json({ message: 'Product deleted' });
+  } catch (err) {
+    console.error('Error deleting product:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
