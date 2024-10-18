@@ -1,4 +1,4 @@
-# Simple CRUD Backend with Express, Mongoose, and Redis
+# Simple CRUD Backend with Express, Mongoose
 
 A basic Node.js application that demonstrates simple CRUD operations for a product management system using Express, Mongoose, and Redis for caching.
 
