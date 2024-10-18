@@ -8,7 +8,6 @@ A basic Node.js application that demonstrates simple CRUD operations for a produ
 2. **Node.js**: A runtime environment for executing JavaScript code on the server-side.
 3. **Express.js**: A web application framework for Node.js to build the RESTful API.
 4. **Mongoose**: An ODM (Object Data Modeling) library for MongoDB and Node.js, allowing for easy interaction with MongoDB databases.
-5. **Redis**: An in-memory data structure store used as a database, cache, and message broker for caching purposes.
 6. **dotenv**: A library for managing environment variables for configuration.
 
 ## Features
