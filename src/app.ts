@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors'; // Import the CORS middleware
 import productRoutes from './routes/productRoutes';
 
 dotenv.config();
@@ -8,6 +9,7 @@ dotenv.config();
 const app = express();
 
 // middlewares
+app.use(cors()); // Use CORS middleware
 app.use(express.json());
 
 // MongoDB connection using mongoose
